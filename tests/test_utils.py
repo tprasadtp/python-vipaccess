@@ -76,10 +76,6 @@ def test_generate_otp_uri():
     assert urlparse.parse_qs(generated_uri.params) == urlparse.parse_qs(expected_uri.params)
     assert urlparse.parse_qs(generated_uri.query) == urlparse.parse_qs(expected_uri.query)
 
-def test_generate_qr_code():
-    test_uri = 'otpauth://totp/VIP%20Access:VSST26070843?secret=LJYWKRGZO5TV2IQSD434O5RWELYBGXDJ&issuer=Symantec'
-    assert generate_qr_code(test_uri)
-
 def test_check_token_detects_valid_token():
     test_request = generate_request()
     test_response = requests.post(PROVISIONING_URL, data=test_request)

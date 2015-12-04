@@ -30,11 +30,9 @@ setup(
     keywords='development',
     packages=['vipaccess'],
     install_requires=[
-        'image',
         'lxml',
         'oath',
         'PyCrypto',
-        'qrcode',
         'requests',
     ],
     entry_points={
