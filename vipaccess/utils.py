@@ -254,7 +254,7 @@ def check_token(token_id, secret):
         return False
 
 def main():
-    request = generate_request()
+    request = generate_request(token_model='VSMT')
 
     response = get_provisioning_response(request)
 
