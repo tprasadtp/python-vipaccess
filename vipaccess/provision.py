@@ -215,28 +215,3 @@ def check_token(token_id, secret):
         return True
     else:
         return False
-
-def main():
-    request = generate_request(token_model='VSMT')
-
-    response = get_provisioning_response(request)
-
-    otp_token = get_token_from_response(response.content)
-
-    otp_secret = decrypt_key(otp_token['iv'], otp_token['cipher'])
-    otp_secret_b64 = base64.b32encode(otp_secret).upper()
-
-    if not check_token(otp_token['id'], otp_secret):
-        sys.stderr.write("Something went wrong--the token is invalid.\n")
-        sys.exit(1)
-
-    otp_uri = generate_otp_uri(otp_token['id'], otp_secret)
-    print(otp_uri)
-    print("BE AWARE that this new credential expires on this date: " + otp_token['expiry'])
-    print('\nYou will need the ID to register this token: ' + otp_token['id'])
-    print('\nYou can now use oathtool to generate the same OTP codes')
-    print('as would be produced by the Android/iOS VIP Access apps:\n')
-    print('    oathtool -d6 -b --totp    {}  # 6-digit code'''.format(otp_secret_b64))
-    print('    oathtool -d6 -b --totp -v {}  # ... with extra information'''.format(otp_secret_b64))
-
-    return True

@@ -21,7 +21,7 @@ try:
 except ImportError:
     import urlparse
 
-from vipaccess.utils import *
+from vipaccess.provision import *
 
 
 def test_generate_request():
@@ -88,6 +88,3 @@ def test_check_token_detects_invalid_token():
     test_token_id = 'VSST26070843'
     test_token_secret = b'ZqeD\xd9wg]"\x12\x1f7\xc7v6"\xf0\x13\\i'
     assert not check_token(test_token_id, test_token_secret)
-
-def test_main():
-    assert main()

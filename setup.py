@@ -34,10 +34,11 @@ setup(
         'oath',
         'PyCrypto',
         'requests',
+        'oath',
     ],
     entry_points={
         'console_scripts': [
-            'vipaccess=vipaccess.utils:main',
+            'vipaccess=vipaccess.cli:main',
         ],
     },
     test_suite='nose.collector',
