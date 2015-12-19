@@ -74,62 +74,25 @@ REQUEST_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8" ?>
 
 def generate_request(**request_parameters):
     '''Generate a token provisioning request.'''
-    request_parameters['timestamp'] = request_parameters.get(
-        'timestamp',
-        int(time.time())
-        )
-    request_parameters['token_model'] = request_parameters.get(
-        'token_model',
-        'VSST'
-        )
-    request_parameters['otp_algorithm'] = request_parameters.get(
-        'otp_algorithm',
-        'HMAC-SHA1-TRUNC-6DIGITS'
-        )
-    request_parameters['shared_secret_delivery_method'] = request_parameters.get(
-        'shared_secret_delivery_method',
-        'HTTPS'
-        )
-    request_parameters['manufacturer'] = request_parameters.get(
-        'manufacturer',
-        'Apple Inc.'
-        )
-    request_parameters['serial'] = request_parameters.get(
-        'serial',
-        ''.join([random.choice(string.digits + string.ascii_uppercase)
-            for x in range(0, 12)]
-            )
-        )
-    request_parameters['model'] = request_parameters.get(
-        'model',
-        'MacBookPro%d,%d' % (random.randint(1, 12), random.randint(1, 4))
-        )
-    request_parameters['app_handle'] = request_parameters.get(
-        'app_handle',
-        'iMac010200'
-        )
-    request_parameters['client_id_type'] = request_parameters.get(
-        'client_id_type',
-        'BOARDID'
-        )
-    request_parameters['client_id'] = request_parameters.get(
-        'client_id',
-        'Mac-' + ''.join([random.choice('0123456789ABCDEF')
-            for x in range(0, 16)]
-            )
-        )
-    request_parameters['dist_channel'] = request_parameters.get(
-        'dist_channel',
-        'Symantec'
-        )
-    request_parameters['platform'] = request_parameters.get(
-        'platform',
-        'iMac'
-        )
-    request_parameters['os'] = request_parameters.get(
-        'os',
-        request_parameters['model']
-        )
+    default_model = 'MacBookPro%d,%d' % (random.randint(1, 12), random.randint(1, 4))
+    default_request_parameters = {
+        'timestamp':int(time.time()),
+        'token_model':'VSST',
+        'otp_algorithm':'HMAC-SHA1-TRUNC-6DIGITS',
+        'shared_secret_delivery_method':'HTTPS',
+        'manufacturer':'Apple Inc.',
+        'serial':''.join(random.choice(string.digits + string.ascii_uppercase) for x in range(12)),
+        'model':default_model,
+        'app_handle':'iMac010200',
+        'client_id_type':'BOARDID',
+        'client_id':'Mac-' + ''.join(random.choice('0123456789ABCDEF') for x in range(16)),
+        'dist_channel':'Symantec',
+        'platform':'iMac',
+        'os':default_model,
+    }
+
+    default_request_parameters.update(request_parameters)
+    request_parameters = default_request_parameters
 
     data_before_hmac = u'%(timestamp)d%(timestamp)d%(client_id_type)s%(client_id)s%(dist_channel)s' % request_parameters
     request_parameters['data'] = base64.b64encode(
