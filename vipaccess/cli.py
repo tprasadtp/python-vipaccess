@@ -40,7 +40,7 @@ argparse.ArgumentParser.set_default_subparser = set_default_subparser
 
 ########################################
 
-def provision(args):
+def provision(p, args):
     request = vp.generate_request(token_model=args.token_model)
     response = vp.get_provisioning_response(request)
     otp_token = vp.get_token_from_response(response.content)
@@ -69,7 +69,7 @@ def provision(args):
         print('Credential created and saved successfully: ' + dotfile.name)
         print('You will need the ID to register this credential: ' + otp_token['id'])
 
-def show(args):
+def show(p, args):
     if args.secret:
         key = oath._utils.tohex( oath.google_authenticator.lenient_b32decode(args.secret) )
     else:
@@ -83,13 +83,18 @@ def show(args):
 def main():
     p = argparse.ArgumentParser()
 
+    class PrintAction(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            setattr(namespace, 'print', True)
+            setattr(namespace, 'dotfile', None)
+
     sp = p.add_subparsers(dest='cmd')
     pprov = sp.add_parser('provision', help='Provision a new VIP Access credential')
     pprov.set_defaults(func=provision)
     m = pprov.add_mutually_exclusive_group()
-    m.add_argument('-p', '--print', action='store_true',
+    m.add_argument('-p', '--print', action=PrintAction, nargs=0,
                    help="Print the new credential, but don't save it to a file")
-    m.add_argument('-o', '--dotfile', type=PathType(type='file'), default=os.path.expanduser('~/.vipaccess'),
+    m.add_argument('-o', '--dotfile', type=PathType(type='file', exists=False), default=os.path.expanduser('~/.vipaccess'),
                    help="File in which to store the new credential (default ~/.vipaccess")
     pprov.add_argument('-t', '--token-model', default='VSST',
                       help="VIP Access token model. Should be VSST (desktop token, default) or VSMT (mobile token). Some clients only accept one or the other.")
@@ -104,7 +109,7 @@ def main():
 
     p.set_default_subparser('show')
     args = p.parse_args()
-    return args.func(args)
+    return args.func(p, args)
 
 if __name__=='__main__':
     main()
