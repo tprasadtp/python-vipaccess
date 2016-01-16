@@ -56,7 +56,7 @@ def provision(p, args):
         print("This credential expires on this date: " + otp_token['expiry'])
         print('\nYou will need the ID to register this credential: ' + otp_token['id'])
         print('\nYou can use oathtool to generate the same OTP codes')
-        print('as would be produced by the Android/iOS VIP Access apps:\n')
+        print('as would be produced by the official VIP Access apps:\n')
         print('    oathtool -d6 -b --totp    {}  # 6-digit code'''.format(otp_secret_b64))
         print('    oathtool -d6 -b --totp -v {}  # ... with extra information'''.format(otp_secret_b64))
     else:
