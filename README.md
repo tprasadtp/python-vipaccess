@@ -49,6 +49,18 @@ Dependencies
 If you have `pip` installed on your system, you can install them with
 `pip install image lxml oath PyCrypto qrcode requests`.
 
+Manual
+------
+
+1. Check out this repository by running
+   ``git clone https://github.com/dlenski/python-vipaccess.git``
+2. Switch to the ``python-vipaccess`` directory by running
+   ``cd python-vipaccess``
+3. Install the ``vipaccess`` module
+
+   -  With [pip](https://en.wikipedia.org/wiki/Pip_(package_manager)): ``pip install .``
+   -  Without pip: ``python setup.py install``
+
 Usage
 -----
 
