@@ -47,7 +47,7 @@ Dependencies
 -  [`requests`](https://pypi.python.org/pypi/requests/)
 
 If you have `pip` installed on your system, you can install them with
-`pip install image lxml oath PyCrypto qrcode requests`.
+`pip install lxml oath PyCrypto requests`.
 
 Manual
 ------
@@ -64,7 +64,7 @@ Manual
 Usage
 -----
 
-(This section covers the expanded CLI options of this fork, rather than [@cyrozap](https://github.com/cyrozap)'s origin version.)
+(This section covers the expanded CLI options of this fork, rather than [@cyrozap](https://github.com/cyrozap)'s original version.)
 
 ### Provisioning a new VIP Access credential
 
