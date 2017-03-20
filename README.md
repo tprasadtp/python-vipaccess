@@ -5,7 +5,10 @@ This is a fork of [@cyrozap](https://github.com/cyrozap)'s [`python-vipaccess`](
 
 Main differences:
 
-- No dependency on `qrcode` or `image` libraries
+- No dependency on `qrcode` or `image` libraries; you can easily use
+  external tools such as [`qrencode`](https://github.com/fukuchi/libqrencode)
+  to convert an `otpauth://` URL to a QR code if needed, so it seems
+  unnecessary to build in this functionality.
 - Option to generate either the desktop (`VSST`) or mobile (`VSMT`)
   version on the VIP Access tokens; as far as I can tell there is no
   real difference between them, but some clients require one or the
