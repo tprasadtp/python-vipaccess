@@ -7,6 +7,8 @@ import base64
 from vipaccess.patharg import PathType
 from vipaccess import provision as vp
 
+EXCL_WRITE = 'x' if sys.version_info>=(3,3) else 'wx'
+
 # http://stackoverflow.com/a/26379693/20789
 
 def set_default_subparser(self, name, args=None):
@@ -61,7 +63,7 @@ def provision(p, args):
         print('    oathtool -d6 -b --totp -v {}  # ... with extra information'''.format(otp_secret_b32))
     else:
         os.umask(0o077) # stoken does this too (security)
-        with open(os.path.expanduser(args.dotfile), "wx") as dotfile:
+        with open(os.path.expanduser(args.dotfile), EXCL_WRITE) as dotfile:
             dotfile.write('version 1\n')
             dotfile.write('secret %s\n' % otp_secret_b32)
             dotfile.write('id %s\n' % otp_token['id'])
