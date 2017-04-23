@@ -45,7 +45,7 @@ def provision(p, args):
     response = vp.get_provisioning_response(request)
     otp_token = vp.get_token_from_response(response.content)
     otp_secret = vp.decrypt_key(otp_token['iv'], otp_token['cipher'])
-    otp_secret_b64 = base64.b32encode(otp_secret).upper()
+    otp_secret_b32 = base64.b32encode(otp_secret).upper().decode('ascii')
     if not vp.check_token(otp_token['id'], otp_secret):
         sys.stderr.write("Something went wrong--the token is invalid.\n")
         sys.exit(1)
@@ -57,13 +57,13 @@ def provision(p, args):
         print('\nYou will need the ID to register this credential: ' + otp_token['id'])
         print('\nYou can use oathtool to generate the same OTP codes')
         print('as would be produced by the official VIP Access apps:\n')
-        print('    oathtool -d6 -b --totp    {}  # 6-digit code'''.format(otp_secret_b64))
-        print('    oathtool -d6 -b --totp -v {}  # ... with extra information'''.format(otp_secret_b64))
+        print('    oathtool -d6 -b --totp    {}  # 6-digit code'''.format(otp_secret_b32))
+        print('    oathtool -d6 -b --totp -v {}  # ... with extra information'''.format(otp_secret_b32))
     else:
         os.umask(0o077) # stoken does this too (security)
         with open(os.path.expanduser(args.dotfile), "wx") as dotfile:
             dotfile.write('version 1\n')
-            dotfile.write('secret %s\n' % otp_secret_b64)
+            dotfile.write('secret %s\n' % otp_secret_b32)
             dotfile.write('id %s\n' % otp_token['id'])
             dotfile.write('expiry %s\n' % otp_token['expiry'])
         print('Credential created and saved successfully: ' + dotfile.name)
