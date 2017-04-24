@@ -73,13 +73,26 @@ def provision(p, args):
 
 def show(p, args):
     if args.secret:
-        key = oath._utils.tohex( oath.google_authenticator.lenient_b32decode(args.secret) )
+        secret = args.secret
     else:
         with open(args.dotfile, "r") as dotfile:
             d = dict( l.strip().split(None, 1) for l in dotfile )
-        assert d.get('version')=='1'
-        key = oath._utils.tohex( oath.google_authenticator.lenient_b32decode(d.get('secret')) )
+        if 'version' not in d:
+            p.error('%s does not specify version' % args.dotfile)
+        elif d['version'] != '1':
+            p.error("%s specifies version %r, rather than expected '1'" % (args.dotfile, d['version']))
+        elif 'secret' not in d:
+            p.error('%s does not specify secret' % args.dotfile)
+        secret = d.get('secret')
+        if args.verbose:
+            if 'id' in d: print('Token ID: %s' % d['id'], file=sys.stderr)
+            if 'expiry' in d: print('Token expiration: %s' % d['expiry'], file=sys.stderr)
+            sys.stderr.write('\n')
 
+    try:
+        key = oath._utils.tohex( oath.google_authenticator.lenient_b32decode(secret) )
+    except Exception as e:
+        p.error('error interpreting secret as base32: %s' % e)
     print(oath.totp(key))
 
 def main():
@@ -107,6 +120,7 @@ def main():
                    help="Specify the token secret on the command line (base32 encoded)")
     m.add_argument('-f', '--dotfile', type=PathType(exists=True), default=os.path.expanduser('~/.vipaccess'),
                    help="File in which the credential is stored (default ~/.vipaccess")
+    m.add_argument('-v', '--verbose', action='store_true')
     pshow.set_defaults(func=show)
 
     p.set_default_subparser('show')
