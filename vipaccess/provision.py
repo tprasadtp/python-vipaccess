@@ -219,5 +219,7 @@ def check_token(token_id, secret):
         )
     if "Your VIP Credential is working correctly" in token_check.text:
         return True
-    else:
+    elif "Your VIP credential needs to be sync" in token_check.text:
         return False
+    else:
+        return None
