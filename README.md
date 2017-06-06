@@ -55,6 +55,25 @@ If you have `pip` installed on your system, you can install them with
 Manual
 ------
 
+If you have Docker installed, you can simply use the
+[Docker image](https://hub.docker.com/r/kayvan/vipaccess/) to run
+the `vipaccess` tool:
+
+```
+docker run --rm kayvan/vipaccess -h
+usage: vipaccess [-h] {provision,show} ...
+
+positional arguments:
+  {provision,show}
+    provision       Provision a new VIP Access credential
+    show            Show the current 6-digit token
+
+optional arguments:
+  -h, --help        show this help message and exit
+```
+
+Alternatively, you can build it.
+
 1. Check out this repository by running
    ``git clone https://github.com/dlenski/python-vipaccess.git``
 2. Switch to the ``python-vipaccess`` directory by running
