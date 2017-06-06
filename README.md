@@ -60,19 +60,22 @@ If you have Docker installed, you can simply use the
 the `vipaccess` tool:
 
 ```
-docker run --rm kayvan/vipaccess -h
-usage: vipaccess [-h] {provision,show} ...
+docker run --rm kayvan/vipaccess provision -p -t VSST
+Credential created successfully:
+	otpauth://totp/VIP%20Access:VSST1113377?secret=YOURSECRET&issuer=Symantec
+This credential expires on this date: 2020-06-05T15:26:26.585Z
 
-positional arguments:
-  {provision,show}
-    provision       Provision a new VIP Access credential
-    show            Show the current 6-digit token
-
-optional arguments:
-  -h, --help        show this help message and exit
+You will need the ID to register this credential: VSST1113377
 ```
 
-Alternatively, you can build it.
+And with your generated secret, use the `show` command like this:
+
+```
+docker run --rm kayvan/vipaccess show -s YOURSECRET
+935163
+```
+
+Alternatively, you can build it:
 
 1. Check out this repository by running
    ``git clone https://github.com/dlenski/python-vipaccess.git``
@@ -137,6 +140,17 @@ secret AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 id VSST12345678
 expiry 2019-01-15T12:00:00.000Z
 ```
+
+### Using qrencode to register your credential with TOTP apps (e.g. Authy)
+
+Once you generate a token with `vipaccess provision -p`, use the `otpauth` URL
+to generate the QR code:
+
+```
+qrencode -t ANSI256 'otpauth://totp/VIP%20Access:VSSTXXXX?secret=YYYY&issuer=Symantec'
+```
+
+Scan the code into your TOTP generating app, like Authy.
 
 ### Generating access codes using an existing credential
 
