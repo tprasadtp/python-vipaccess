@@ -5,10 +5,15 @@ FROM python:2.7-alpine
 
 LABEL maintainer "Kayvan Sylvan <kayvansylvan@gmail.com>"
 
-RUN apk add --no-cache libxml2-dev libxslt-dev gcc libc-dev
-RUN pip install lxml oath PyCrypto requests
-
 COPY . /usr/src/
 WORKDIR /usr/src
-RUN pip install .
+
+RUN apk add --no-cache --virtual .build-deps \
+    gcc libc-dev libxml2-dev libxslt-dev \
+  && apk add --no-cache libxml2 libxslt \
+  && pip install --no-cache-dir lxml oath PyCrypto requests \
+  && pip install --no-cache-dir . \
+  && find /usr/local -name *.pyo -o -name *.pyc -exec rm -f '{}' \; \
+  && apk del .build-deps && touch /root/.vipaccess
+
 ENTRYPOINT ["/usr/local/bin/vipaccess"]
