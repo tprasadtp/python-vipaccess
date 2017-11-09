@@ -120,7 +120,7 @@ def main():
                    help="Specify the token secret on the command line (base32 encoded)")
     m.add_argument('-f', '--dotfile', type=PathType(exists=True), default=os.path.expanduser('~/.vipaccess'),
                    help="File in which the credential is stored (default ~/.vipaccess")
-    m.add_argument('-v', '--verbose', action='store_true')
+    pshow.add_argument('-v', '--verbose', action='store_true')
     pshow.set_defaults(func=show)
 
     p.set_default_subparser('show')
