@@ -31,7 +31,7 @@ setup(
     install_requires=[
         'lxml',
         'oath',
-        'PyCrypto',
+        'pycryptodome',
         'requests',
         'oath',
     ],
