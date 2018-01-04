@@ -46,11 +46,11 @@ Dependencies
 -  Python 2.7, 3.3, 3.4, 3.5
 -  [`lxml`](https://pypi.python.org/pypi/lxml/3.4.0)
 -  [`oath`](https://pypi.python.org/pypi/oath/1.2)
--  [`PyCrypto`](https://pypi.python.org/pypi/pycrypto/2.6.1)
+-  [`pycryptodome`](https://pypi.python.org/pypi/pycryptodome/3.4.7)
 -  [`requests`](https://pypi.python.org/pypi/requests/)
 
 If you have `pip` installed on your system, you can install them with
-`pip install lxml oath PyCrypto requests`.
+`pip install lxml oath pycryptodome requests`.
 
 Manual
 ------
