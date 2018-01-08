@@ -43,13 +43,18 @@ argparse.ArgumentParser.set_default_subparser = set_default_subparser
 ########################################
 
 def provision(p, args):
+    print("Generating request...")
     request = vp.generate_request(token_model=args.token_model)
+    print("Fetching provisioning response...")
     response = vp.get_provisioning_response(request)
+    print("Getting token from response...")
     otp_token = vp.get_token_from_response(response.content)
+    print("Decrypting token...")
     otp_secret = vp.decrypt_key(otp_token['iv'], otp_token['cipher'])
     otp_secret_b32 = base64.b32encode(otp_secret).upper().decode('ascii')
+    print("Checking token...")
     if not vp.check_token(otp_token['id'], otp_secret):
-        print("WARNING: Something went wrong--the token could not be validated.",
+        print("WARNING: Something went wrong--the token could not be validated.\n",
               "    (check that your system time is set correctly)\n", file=sys.stderr)
 
     if args.print:
