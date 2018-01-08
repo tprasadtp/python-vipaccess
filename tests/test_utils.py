@@ -54,8 +54,12 @@ def test_get_token_from_response():
         'cipher': b' \xb0px\xe0\x84:\x83\x01,\x90\x11\xce\x87\x94"[\xb4\xfb\x99\xbaoy!fX\xdd\xe5\xda3\x01\x19',
         'digest': b'2\x86\xa2un\xd7\x0f7\x93d\x9a\xa1}\x14\x02dH\x9e\x01\x13',
         'expiry': '2017-09-25T23:36:22.056Z',
+        'period': 30,
+        'algorithm': 'sha1',
+        'digits': 6,
     }
     token = get_token_from_response(test_response)
+    assert token.pop('timeskew', None) is not None
     assert token == expected_token
 
 def test_decrypt_key():
@@ -66,10 +70,22 @@ def test_decrypt_key():
     assert decrypted_key == expected_key
 
 def test_generate_otp_uri():
-    test_id = 'VSST26070843'
+    test_token = {
+        'salt': b'\xbb\x99`\x7fQ$\xf1`4\x8a"0VH\xf2\xdb\xa8\xfa\xa5\xf9',
+        'iteration_count': 50,
+        'iv': b'\x16\xc85)\xa7\xe6\x01\x7f4\x81A\x03\x008\xa3\x1f',
+        'id': 'VSST26070843',
+        'cipher': b' \xb0px\xe0\x84:\x83\x01,\x90\x11\xce\x87\x94"[\xb4\xfb\x99\xbaoy!fX\xdd\xe5\xda3\x01\x19',
+        'digest': b'2\x86\xa2un\xd7\x0f7\x93d\x9a\xa1}\x14\x02dH\x9e\x01\x13',
+        'expiry': '2017-09-25T23:36:22.056Z',
+        'period': 30,
+        'algorithm': 'sha1',
+        'digits': 6,
+        'timeskew': 0,
+    }
     test_secret = b'ZqeD\xd9wg]"\x12\x1f7\xc7v6"\xf0\x13\\i'
-    expected_uri = urlparse.urlparse('otpauth://totp/VIP%20Access:VSST26070843?secret=LJYWKRGZO5TV2IQSD434O5RWELYBGXDJ&issuer=Symantec')
-    generated_uri = urlparse.urlparse(generate_otp_uri(test_id, test_secret))
+    expected_uri = urlparse.urlparse('otpauth://totp/VIP%20Access:VSST26070843?secret=LJYWKRGZO5TV2IQSD434O5RWELYBGXDJ&issuer=Symantec&digits=6&algorithm=sha1&period=30')
+    generated_uri = urlparse.urlparse(generate_otp_uri(test_token, test_secret))
     assert generated_uri.scheme == expected_uri.scheme
     assert generated_uri.netloc == expected_uri.netloc
     assert generated_uri.path == expected_uri.path
