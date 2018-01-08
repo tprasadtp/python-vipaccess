@@ -111,62 +111,29 @@ def get_provisioning_response(request):
 def get_token_from_response(response_xml):
     '''Retrieve relevant token details from Symantec's provisioning
     response.'''
-    # Define an arbitrary namespace "vipservice" because xpath doesn't like it
+    # Define an arbitrary namespace "vipservice" because lxml doesn't like it
     # when it's "None"
-    namespace = {'vipservice':'http://www.verisign.com/2006/08/vipservice'}
+    ns = {'v':'http://www.verisign.com/2006/08/vipservice'}
 
     tree = etree.fromstring(response_xml)
-    result = tree.xpath(
-        '//vipservice:Status/vipservice:StatusMessage',
-        namespaces=namespace
-        )[0].text
+    result = tree.find('v:Status/v:StatusMessage', ns).text
 
     if result == 'Success':
         token = {}
-        container = tree.xpath(
-            '//vipservice:SecretContainer',
-            namespaces=namespace
-            )[0]
-        encryption_method = container.xpath(
-            '//vipservice:EncryptionMethod',
-            namespaces=namespace
-            )[0]
-        token['salt'] = base64.b64decode(
-            encryption_method.xpath('//vipservice:PBESalt',
-                namespaces=namespace
-                )[0].text
-            )
-        token['iteration_count'] = int(
-            encryption_method.xpath(
-                '//vipservice:PBEIterationCount',
-                namespaces=namespace
-                )[0].text
-            )
-        token['iv'] = base64.b64decode(
-            encryption_method.xpath(
-                '//vipservice:IV',
-                namespaces=namespace
-                )[0].text
-            )
+        container = tree.find('v:SecretContainer', ns)
+        encryption_method = container.find('v:EncryptionMethod', ns)
+        token['salt'] = base64.b64decode(encryption_method.find('v:PBESalt', ns).text)
+        token['iteration_count'] = int(encryption_method.find('v:PBEIterationCount', ns).text)
+        token['iv'] = base64.b64decode(encryption_method.find('v:IV', ns).text)
 
-        device = container.xpath('//vipservice:Device', namespaces=namespace)[0]
-        secret = device.xpath('//vipservice:Secret', namespaces=namespace)[0]
-        data = secret.xpath('//vipservice:Data', namespaces=namespace)[0]
-        expiry = secret.xpath('//vipservice:Expiry', namespaces=namespace)[0]
+        device = container.find('v:Device', ns)
+        secret = device.find('v:Secret', ns)
+        data = secret.find('v:Data', ns)
+        expiry = secret.find('v:Expiry', ns)
 
         token['id'] = secret.attrib['Id']
-        token['cipher'] = base64.b64decode(
-            data.xpath(
-                '//vipservice:Cipher',
-                namespaces=namespace
-                )[0].text
-            )
-        token['digest'] = base64.b64decode(
-            data.xpath(
-                '//vipservice:Digest',
-                namespaces=namespace
-                )[0].text
-            )
+        token['cipher'] = base64.b64decode(data.find('v:Cipher', ns).text)
+        token['digest'] = base64.b64decode(data.find('v:Digest', ns).text)
         token['expiry'] = expiry.text
 
         return token
