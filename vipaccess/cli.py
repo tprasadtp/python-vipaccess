@@ -56,7 +56,8 @@ def provision(p, args):
     print("Checking token...")
     if not vp.check_token(otp_token['id'], otp_secret, session):
         print("WARNING: Something went wrong--the token could not be validated.\n",
-              "    (check that your system time is set correctly)\n", file=sys.stderr)
+              "    (check your system time; it differs from the server's by %d seconds)\n" % otp_token['timeskew'],
+              file=sys.stderr)
 
     if args.print:
         otp_uri = vp.generate_otp_uri(otp_token, otp_secret)

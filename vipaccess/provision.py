@@ -122,6 +122,7 @@ def get_token_from_response(response_xml):
 
     if result == 'Success':
         token = {}
+        token['timeskew'] = time.time() - int(tree.find('v:UTCTimestamp', ns).text)
         container = tree.find('v:SecretContainer', ns)
         encryption_method = container.find('v:EncryptionMethod', ns)
         token['salt'] = base64.b64decode(encryption_method.find('v:PBESalt', ns).text)
