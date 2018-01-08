@@ -39,6 +39,8 @@ from oath import totp
 
 PROVISIONING_URL = 'https://services.vip.symantec.com/prov'
 
+TEST_URL = 'https://vip.symantec.com/otpCheck'
+
 HMAC_KEY = b'\xdd\x0b\xa6\x92\xc3\x8a\xa3\xa9\x93\xa3\xaa\x26\x96\x8c\xd9\xc2\xaa\x2a\xa2\xcb\x23\xb7\xc2\xd2\xaa\xaf\x8f\x8f\xc9\xa0\xa9\xa1'
 
 TOKEN_ENCRYPTION_KEY = b'\x01\xad\x9b\xc6\x82\xa3\xaa\x93\xa9\xa3\x23\x9a\x86\xd6\xcc\xd9'
@@ -105,8 +107,8 @@ def generate_request(**request_parameters):
 
     return REQUEST_TEMPLATE % request_parameters
 
-def get_provisioning_response(request):
-    return requests.post(PROVISIONING_URL, data=request)
+def get_provisioning_response(request, session=requests):
+    return session.post(PROVISIONING_URL, data=request)
 
 def get_token_from_response(response_xml):
     '''Retrieve relevant token details from Symantec's provisioning
@@ -179,12 +181,12 @@ def generate_otp_uri(token, secret):
 
     return 'otpauth://%(otp_type)s/%(app_name)s:%(account_name)s?%(parameters)s' % token_parameters
 
-def check_token(token_id, secret):
+def check_token(token_id, secret, session=requests):
     '''Check the validity of the generated token.'''
     otp = totp(binascii.b2a_hex(secret).decode('utf-8'))
     test_url = 'https://vip.symantec.com/otpCheck'
-    token_check = requests.post(
-        test_url,
+    token_check = session.post(
+        TEST_URL,
         data={
             'cr1':otp[0],
             'cr2':otp[1],
