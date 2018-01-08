@@ -130,11 +130,20 @@ def get_token_from_response(response_xml):
         secret = device.find('v:Secret', ns)
         data = secret.find('v:Data', ns)
         expiry = secret.find('v:Expiry', ns)
+        usage = secret.find('v:Usage', ns)
 
         token['id'] = secret.attrib['Id']
         token['cipher'] = base64.b64decode(data.find('v:Cipher', ns).text)
         token['digest'] = base64.b64decode(data.find('v:Digest', ns).text)
         token['expiry'] = expiry.text
+        token['period'] = int(usage.find('v:TimeStep', ns).text)
+
+        algorithm = usage.find('v:AI', ns).attrib['type'].split('-')
+        if len(algorithm)==4 and algorithm[0]=='HMAC' and algorithm[2]=='TRUNC' and algorithm[3].endswith('DIGITS'):
+            token['algorithm'] = algorithm[1].lower()
+            token['digits'] = int(algorithm[3][:-6])
+        else:
+            raise RuntimeError('unknown algorithm %r' % '-'.join(algorithm))
 
         return token
 
@@ -152,15 +161,18 @@ def decrypt_key(token_iv, token_cipher):
 
     return otp_key
 
-def generate_otp_uri(token_id, secret):
+def generate_otp_uri(token, secret):
     '''Generate the OTP URI.'''
     token_parameters = {}
     token_parameters['otp_type'] = urllib.quote('totp')
     token_parameters['app_name'] = urllib.quote('VIP Access')
-    token_parameters['account_name'] = urllib.quote(token_id)
+    token_parameters['account_name'] = urllib.quote(token['id'])
     token_parameters['parameters'] = urllib.urlencode(
         dict(
             secret=base64.b32encode(secret).upper(),
+            digits=token['digits'],
+            period=token['period'],
+            algorithm=token['algorithm'],
             issuer='Symantec'
             )
         )

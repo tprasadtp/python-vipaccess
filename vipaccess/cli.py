@@ -58,7 +58,7 @@ def provision(p, args):
               "    (check that your system time is set correctly)\n", file=sys.stderr)
 
     if args.print:
-        otp_uri = vp.generate_otp_uri(otp_token['id'], otp_secret)
+        otp_uri = vp.generate_otp_uri(otp_token, otp_secret)
         print('Credential created successfully:\n\t' + otp_uri)
         print("This credential expires on this date: " + otp_token['expiry'])
         print('\nYou will need the ID to register this credential: ' + otp_token['id'])
@@ -67,6 +67,9 @@ def provision(p, args):
         print('    oathtool -d6 -b --totp    {}  # 6-digit code'''.format(otp_secret_b32))
         print('    oathtool -d6 -b --totp -v {}  # ... with extra information'''.format(otp_secret_b32))
     else:
+        assert otp_token['digits']==6
+        assert otp_token['algorithm']=='sha1'
+        assert otp_token['period']==30
         os.umask(0o077) # stoken does this too (security)
         with open(os.path.expanduser(args.dotfile), EXCL_WRITE) as dotfile:
             dotfile.write('version 1\n')
