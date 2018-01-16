@@ -1,13 +1,19 @@
+notifications:
+  email:
+    false
+
 sudo: false
 
 language: python
 
 python:
-  - "2.6"
   - "2.7"
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.6"
+  - "3.7-dev"
+  - "nightly"
 
 install:
   - "pip install ."
@@ -18,12 +24,3 @@ script:
 
 after_success:
   - coveralls
-
-deploy:
-  provider: pypi
-  user: cyrozap
-  password:
-    secure: ksuSgb20onjR65wMxYbkQ2gK/P7xwShPMPXQ27an6j22L9d518HVE53/Vn/SvlKbYTd2fOVJHIFaKMfY562nIQAxYVvu9lKQUa4ziSBoLwOuVN9rmEkKrfn9A+jo3t84kRpSNSXgbkoQusu7yT76OvD6t29FT/dKrauVd/UBAsw=
-  on:
-    tags: true
-    repo: cyrozap/python-vipaccess

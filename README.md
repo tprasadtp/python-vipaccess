@@ -1,6 +1,8 @@
 python-vipaccess
 ================
 
+[![Build Status](https://api.travis-ci.org/dlenski/python-vipaccess.png)](https://travis-ci.org/dlenski/python-vipaccess)
+
 This is a fork of [@cyrozap](https://github.com/cyrozap)'s [`python-vipaccess`](https://github.com/dlenski/python-vipaccess).
 
 Main differences:
