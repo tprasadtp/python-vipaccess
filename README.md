@@ -1,18 +1,14 @@
 python-vipaccess
 ================
 
-[![Build Status](https://api.travis-ci.org/dlenski/python-vipaccess.png)](https://travis-ci.org/dlenski/python-vipaccess)
+[![Build Status](https://api.travis-ci.org/tprasadtp/python-vipaccess.png)](https://travis-ci.org/tprasadtp/python-vipaccess)
 
 This is a fork of [@cyrozap](https://github.com/cyrozap)'s [`python-vipaccess`](https://github.com/dlenski/python-vipaccess).
 
 Main differences:
 
-- No dependency on `qrcode` or `image` libraries; you can easily use
-  external tools such as [`qrencode`](https://github.com/fukuchi/libqrencode)
-  to convert an `otpauth://` URL to a QR code if needed, so it seems
-  unnecessary to build in this functionality.
-- Option to generate either the desktop (`VSST`) or mobile (`VSMT`)
-  version on the VIP Access tokens; as far as I can tell there is no
+- Option to generate either the desktop (`VSST`) or mobile (`VSMT`) or HOTP
+  (`VSMB`) version on the VIP Access tokens; as far as I can tell there is no
   real difference between them, but some clients require one or the
   other specifically.
 - Command-line utility is expanded to support *both* token
@@ -50,9 +46,11 @@ Dependencies
 -  [`oath`](https://pypi.python.org/pypi/oath/1.2)
 -  [`pycryptodome`](https://pypi.python.org/pypi/pycryptodome/3.4.7)
 -  [`requests`](https://pypi.python.org/pypi/requests/)
+-  qrcode
+-  image
 
 If you have `pip` installed on your system, you can install them with
-`pip install lxml oath pycryptodome requests`.
+`pip install lxml oath pycryptodome requests qrcode image`.
 
 Manual
 ------
