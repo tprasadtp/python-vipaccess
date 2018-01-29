@@ -30,6 +30,8 @@ setup(
     packages=['vipaccess'],
     install_requires=[
         'lxml',
+        'qrcode',
+        'image',
         'oath',
         'pycryptodome',
         'requests',
