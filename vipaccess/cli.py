@@ -122,7 +122,7 @@ def main():
     m.add_argument('-o', '--dotfile', type=PathType(type='file', exists=False), default=os.path.expanduser('~/.vipaccess'),
                    help="File in which to store the new credential (default ~/.vipaccess")
     pprov.add_argument('-t', '--token-model', default='VSST',
-                      help="VIP Access token model. Should be VSST (desktop token, default) or VSMT (mobile token). Some clients only accept one or the other.")
+                      help="VIP Access token model. Should be VSST (desktop token, default) or VSMT (mobile token) or VSMB (HOTP). Some clients only accept one or the other.")
 
     pshow = sp.add_parser('show', help="Show the current 6-digit token")
     m = pshow.add_mutually_exclusive_group()
