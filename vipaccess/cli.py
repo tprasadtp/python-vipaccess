@@ -80,6 +80,11 @@ def provision(p, args):
             dotfile.write('expiry %s\n' % otp_token['expiry'])
         print('Credential created and saved successfully: ' + dotfile.name)
         print('You will need the ID to register this credential: ' + otp_token['id'])
+        print('Generating QR Code')
+        image = vp.generate_qr_code(otp_uri)
+        print('File will be saved as:' + otp_token['id'] + '.jpg')
+        qr_file = otp_token['id']
+        image.save(qr_file)
 
 def show(p, args):
     if args.secret:
