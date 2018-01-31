@@ -9,11 +9,9 @@ COPY . /usr/src/
 WORKDIR /usr/src
 
 RUN apk add --no-cache --virtual .build-deps \
-    gcc libc-dev libxml2-dev libxslt-dev \
-  && apk add --no-cache libxml2 libxslt \
-  && pip install --no-cache-dir lxml oath pycryptodome requests image qrcode\
+    gcc libc-dev libxml2-dev libxslt-dev
+RUN apk add --no-cache libxml2 libxslt jpeg-dev libjpeg
+RUN pip install --no-cache-dir lxml oath PyCrypto requests qrcode image \
   && pip install --no-cache-dir . \
   && find /usr/local -name *.pyo -o -name *.pyc -exec rm -f '{}' \; \
   && apk del .build-deps && touch /root/.vipaccess
-
-ENTRYPOINT ["/usr/local/bin/vipaccess"]

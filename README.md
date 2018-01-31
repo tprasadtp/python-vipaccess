@@ -8,10 +8,10 @@ This is a fork of [@cyrozap](https://github.com/cyrozap)'s [`python-vipaccess`](
 Main differences:
 
 - Option to generate either the desktop (`VSST`) or mobile (`VSMT`)
-  or HOTP  (`VSMB`)
   version on the VIP Access tokens; as far as I can tell there is no
   real difference between them, but some clients require one or the
   other specifically.
+- Provision HOTP Tokens (`VSMB`)
 - Command-line utility is expanded to support *both* token
   provisioning (creating a new token) and emitting codes for an
   existing token (inspired by the command-line interface of
