@@ -169,7 +169,11 @@ def decrypt_key(token_iv, token_cipher):
 def generate_otp_uri(token, secret):
     '''Generate the OTP URI.'''
     token_parameters = {}
-    token_parameters['otp_type'] = urllib.quote('totp')
+    if token_id.startswith('VSMB'):
+        param['count'] = '2'
+        token_parameters['otp_type'] = urllib.quote('hotp')
+    else:
+        token_parameters['otp_type'] = urllib.quote('totp')
     token_parameters['app_name'] = urllib.quote('VIP Access')
     token_parameters['account_name'] = urllib.quote(token['id'])
     token_parameters['parameters'] = urllib.urlencode(
@@ -199,21 +203,38 @@ def generate_qr_code(uri):
 
 def check_token(token_id, secret, session=requests):
     '''Check the validity of the generated token.'''
-    otp = totp(binascii.b2a_hex(secret).decode('utf-8'))
     test_url = 'https://vip.symantec.com/otpCheck'
-    token_check = session.post(
-        TEST_URL,
-        data={
-            'cr1':otp[0],
-            'cr2':otp[1],
-            'cr3':otp[2],
-            'cr4':otp[3],
-            'cr5':otp[4],
-            'cr6':otp[5],
-            'cred':token_id,
-            'continue':'otp_check'
-            }
-        )
+    if token_id.startswith('VSMB'):
+         otp = hotp(binascii.b2a_hex(secret),1).encode('utf-8')
+         token_check = session.post(
+             TEST_URL,
+             data={
+                 'cr1':otp[0],
+                 'cr2':otp[1],
+                 'cr3':otp[2],
+                 'cr4':otp[3],
+                 'cr5':otp[4],
+                 'cr6':otp[5],
+                 'cr7':"",
+                 'cred':token_id,
+                 'count'=1,
+                 }
+             )
+    else
+        otp = totp(binascii.b2a_hex(secret).decode('utf-8'))
+        token_check = session.post(
+            TEST_URL,
+            data={
+                'cr1':otp[0],
+                'cr2':otp[1],
+                'cr3':otp[2],
+                'cr4':otp[3],
+                'cr5':otp[4],
+                'cr6':otp[5],
+                'cred':token_id,
+                'continue':'otp_check'
+                }
+            )
     if "Your VIP Credential is working correctly" in token_check.text:
         return True
     elif "Your VIP credential needs to be sync" in token_check.text:
