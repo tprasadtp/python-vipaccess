@@ -4,6 +4,7 @@ import os, sys
 import argparse
 import oath
 import base64
+import image
 from vipaccess.patharg import PathType
 from vipaccess import provision as vp
 
@@ -68,6 +69,11 @@ def provision(p, args):
         print('as would be produced by the official VIP Access apps:\n')
         print('    oathtool -d6 -b --totp    {}  # 6-digit code'''.format(otp_secret_b32))
         print('    oathtool -d6 -b --totp -v {}  # ... with extra information'''.format(otp_secret_b32))
+        print('Generating QR Code')
+        print('File will be saved as: ' + otp_token['id'] + '.jpg')
+        image = vp.generate_qr_code(otp_uri)
+        qr_file = otp_token['id']+'.jpg'
+        image.save(qr_file)
     else:
         assert otp_token['digits']==6
         assert otp_token['algorithm']=='sha1'
@@ -80,11 +86,6 @@ def provision(p, args):
             dotfile.write('expiry %s\n' % otp_token['expiry'])
         print('Credential created and saved successfully: ' + dotfile.name)
         print('You will need the ID to register this credential: ' + otp_token['id'])
-        print('Generating QR Code')
-        image = vp.generate_qr_code(otp_uri)
-        print('File will be saved as:' + otp_token['id'] + '.jpg')
-        qr_file = otp_token['id']
-        image.save(qr_file)
 
 def show(p, args):
     if args.secret:
@@ -126,7 +127,7 @@ def main():
                    help="Print the new credential, but don't save it to a file")
     m.add_argument('-o', '--dotfile', type=PathType(type='file', exists=False), default=os.path.expanduser('~/.vipaccess'),
                    help="File in which to store the new credential (default ~/.vipaccess")
-    pprov.add_argument('-t', '--token-model', default='VSST',
+    pprov.add_argument('-t', '--token-model', default='VSMT',
                       help="VIP Access token model. Should be VSST (desktop token, default) or VSMT (mobile token) or VSMB (HOTP). Some clients only accept one or the other.")
 
     pshow = sp.add_parser('show', help="Show the current 6-digit token")
