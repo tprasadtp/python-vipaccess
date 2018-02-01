@@ -37,6 +37,7 @@ from Crypto.Cipher import AES
 from Crypto.Random import random
 from lxml import etree
 from oath import totp
+from oath import hotp
 
 
 PROVISIONING_URL = 'https://services.vip.symantec.com/prov'
@@ -141,8 +142,10 @@ def get_token_from_response(response_xml):
         token['cipher'] = base64.b64decode(data.find('v:Cipher', ns).text)
         token['digest'] = base64.b64decode(data.find('v:Digest', ns).text)
         token['expiry'] = expiry.text
-        token['period'] = int(usage.find('v:TimeStep', ns).text)
-
+        if token['id'].startswith('VSMB'):
+            token['count'] = int(usage.find('v:Counter', ns).text)
+        else:
+            token['period'] = int(usage.find('v:TimeStep', ns).text)
         algorithm = usage.find('v:AI', ns).attrib['type'].split('-')
         if len(algorithm)==4 and algorithm[0]=='HMAC' and algorithm[2]=='TRUNC' and algorithm[3].endswith('DIGITS'):
             token['algorithm'] = algorithm[1].lower()
@@ -150,6 +153,23 @@ def get_token_from_response(response_xml):
         else:
             raise RuntimeError('unknown algorithm %r' % '-'.join(algorithm))
 
+        """if args.verbose:
+            print('Device  : ' + device)
+            print('Secret  : ' + secret)
+            print('Expiry  : ' + expiry)
+            print('Usage   : ' + usage)
+            print('TokenID : ' + token['id'])
+            print('Cipher  : ' + token['cipher'])
+            print('TokenID : ' + token['id'])
+            print('Digest  : ' + token['digest'])
+            print('Period  : ' + token['period'])
+            print('Count   : ' + token['count'])
+            print('algo    : ' + token['algorithm'])
+            print('Digits  : ' + token['digits'])
+            print('Salt    : ' + token['salt'])
+            print('IV      : ' + token['iv'])
+            print('TSkew   : ' + token['timeskew'])
+            """
         return token
 
 def decrypt_key(token_iv, token_cipher):
@@ -169,18 +189,18 @@ def decrypt_key(token_iv, token_cipher):
 def generate_otp_uri(token, secret):
     '''Generate the OTP URI.'''
     token_parameters = {}
-    if token_id.startswith('VSMB'):
-        param['count'] = '2'
+    if urllib.quote(token['id']).startswith('VSMB'):
+        token_parameters['count'] = '2'
         token_parameters['otp_type'] = urllib.quote('hotp')
     else:
         token_parameters['otp_type'] = urllib.quote('totp')
+        token_parameters['period']= urllib.quote('period')
     token_parameters['app_name'] = urllib.quote('VIP Access')
     token_parameters['account_name'] = urllib.quote(token['id'])
     token_parameters['parameters'] = urllib.urlencode(
         dict(
             secret=base64.b32encode(secret).upper(),
             digits=token['digits'],
-            period=token['period'],
             algorithm=token['algorithm'],
             issuer='Symantec'
             )
@@ -205,36 +225,25 @@ def check_token(token_id, secret, session=requests):
     '''Check the validity of the generated token.'''
     test_url = 'https://vip.symantec.com/otpCheck'
     if token_id.startswith('VSMB'):
-         otp = hotp(binascii.b2a_hex(secret),1).encode('utf-8')
-         token_check = session.post(
-             TEST_URL,
-             data={
-                 'cr1':otp[0],
-                 'cr2':otp[1],
-                 'cr3':otp[2],
-                 'cr4':otp[3],
-                 'cr5':otp[4],
-                 'cr6':otp[5],
-                 'cr7':"",
-                 'cred':token_id,
-                 'count'=1,
-                 }
-             )
-    else
+        print('Checking HOTP token with Counter=1')
+        otp = hotp(binascii.b2a_hex(secret),1).encode('utf-8')
+    else:
+        print('Checking TOTP token with Current Time')
         otp = totp(binascii.b2a_hex(secret).decode('utf-8'))
-        token_check = session.post(
-            TEST_URL,
-            data={
-                'cr1':otp[0],
-                'cr2':otp[1],
-                'cr3':otp[2],
-                'cr4':otp[3],
-                'cr5':otp[4],
-                'cr6':otp[5],
-                'cred':token_id,
-                'continue':'otp_check'
-                }
-            )
+    token_check = session.post(
+        TEST_URL,
+        data={
+            'cr1':otp[0],
+            'cr2':otp[1],
+            'cr3':otp[2],
+            'cr4':otp[3],
+            'cr5':otp[4],
+            'cr6':otp[5],
+            'cred':token_id,
+            'count':'1',
+            'continue':'otp_check'
+            }
+)
     if "Your VIP Credential is working correctly" in token_check.text:
         return True
     elif "Your VIP credential needs to be sync" in token_check.text:
