@@ -15,3 +15,5 @@ RUN pip install --no-cache-dir lxml oath PyCrypto requests qrcode image \
   && pip install --no-cache-dir . \
   && find /usr/local -name *.pyo -o -name *.pyc -exec rm -f '{}' \; \
   && apk del .build-deps && touch /root/.vipaccess
+
+ENTRYPOINT ["/usr/local/bin/vipaccess"]
