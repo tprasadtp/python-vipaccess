@@ -53,6 +53,8 @@ def provision(p, args):
     otp_token = vp.get_token_from_response(response.content)
     print("Decrypting token...")
     otp_secret = vp.decrypt_key(otp_token['iv'], otp_token['cipher'])
+    otp_secret_hex = vp.decode_secret_hex(otp_secret)
+    print('Secret in HEX for Yubikey: '+ otp_secret_hex)
     otp_secret_b32 = base64.b32encode(otp_secret).upper().decode('ascii')
     print("Checking token...")
     if not vp.check_token(otp_token['id'], otp_secret, session):

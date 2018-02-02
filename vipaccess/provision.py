@@ -186,6 +186,11 @@ def decrypt_key(token_iv, token_cipher):
 
     return otp_key
 
+def decode_secret_hex(secret):
+    '''Get Secret in Hex For Yubikey'''
+    return binascii.b2a_hex(secret).decode('utf-8')
+
+
 def generate_otp_uri(token, secret):
     '''Generate the OTP URI.'''
     token_parameters = {}
@@ -226,7 +231,7 @@ def check_token(token_id, secret, session=requests):
     test_url = 'https://vip.symantec.com/otpCheck'
     if token_id.startswith('VSMB'):
         print('Checking HOTP token with Counter=1')
-        otp = hotp(binascii.b2a_hex(secret),1).encode('utf-8')
+        otp = hotp(binascii.b2a_hex(secret),1).decode('utf-8')
     else:
         print('Checking TOTP token with Current Time')
         otp = totp(binascii.b2a_hex(secret).decode('utf-8'))
