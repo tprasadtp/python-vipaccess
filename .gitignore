@@ -54,3 +54,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# test py
+hotp.py
+hotp-resp.txt
