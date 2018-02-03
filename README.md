@@ -4,7 +4,7 @@ python-vipaccess
 [![Build Status](https://api.travis-ci.org/tprasadtp/python-vipaccess.png)](https://travis-ci.org/tprasadtp/python-vipaccess)
 [![Coverage
  Status](https://coveralls.io/repos/github/tprasadtp/python-vipaccess/badge.svg?branch=master)](https://coveralls.io/github/tprasadtp/python-vipaccess?branch=master)
- [![Docker Build Status](https://img.shields.io/docker/build/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/tprasadtp/py-vipaccess/)
+ [![Docker Build Status](https://img.shields.io/docker/build/tprasadtp/py-vipaccess.svg)](https://hub.docker.com/r/tprasadtp/py-vipaccess/)
 
 This is a fork of [@cyrozap](https://github.com/cyrozap)'s [`python-vipaccess`](https://github.com/dlenski/python-vipaccess).
 
