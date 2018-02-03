@@ -1,14 +1,18 @@
+#!/usr/bin/env python
+"""
+Cli tool to Access provision funcs
+"""
 from __future__ import print_function
 
-import os, sys
+import os
+import sys
 import argparse
 import oath
 import base64
-import image
 from vipaccess.patharg import PathType
 from vipaccess import provision as vp
 
-EXCL_WRITE = 'x' if sys.version_info>=(3,3) else 'wx'
+EXCL_WRITE = 'x' if sys.version_info>=(3, 3) else 'wx'
 
 # http://stackoverflow.com/a/26379693/20789
 
@@ -76,14 +80,14 @@ def provision(p, args):
             print('    oathtool -d6 -b --totp -v {}  # ... with extra information'''.format(otp_secret_b32))
         print('Generating QR Code')
         print('File will be saved as: ' + otp_token['id'] + '.jpg')
-        image = vp.generate_qr_code(otp_uri)
+        qr_image = vp.generate_qr_code(otp_uri)
         qr_file = otp_token['id']+'.jpg'
-        image.save(qr_file)
+        qr_image.save(qr_file)
     else:
-        assert otp_token['digits']==6
-        assert otp_token['algorithm']=='sha1'
+        assert otp_token['digits'] == 6
+        assert otp_token['algorithm'] == 'sha1'
         if not otp_token['id'].startswith('VSMB'):
-            assert otp_token['period']==30
+            assert otp_token['period'] == 30
         os.umask(0o077) # stoken does this too (security)
         with open(os.path.expanduser(args.dotfile), EXCL_WRITE) as dotfile:
             dotfile.write('version 1\n')
@@ -101,7 +105,7 @@ def show(p, args):
         secret = args.secret
     else:
         with open(args.dotfile, "r") as dotfile:
-            d = dict( l.strip().split(None, 1) for l in dotfile )
+            d = dict(l.strip().split(None, 1) for l in dotfile)
         if 'version' not in d:
             p.error('%s does not specify version' % args.dotfile)
         elif d['version'] != '1':
@@ -138,11 +142,11 @@ def main():
     pprov.set_defaults(func=provision)
     m = pprov.add_mutually_exclusive_group()
     m.add_argument('-p', '--print', action=PrintAction, nargs=0,
-                   help="Print the new credential, but don't save it to a file")
+                    help="Print the new credential, but don't save it to a file")
     m.add_argument('-o', '--dotfile', type=PathType(type='file', exists=False), default=os.path.expanduser('~/.vipaccess'),
-                   help="File in which to store the new credential (default ~/.vipaccess")
+                    help="File in which to store the new credential (default ~/.vipaccess")
     pprov.add_argument('-t', '--token-model', default='VSMT',
-                      help="VIP Access token model. Should be VSST (desktop token, default) or VSMT (mobile token) or VSMB (HOTP). Some clients only accept one or the other.")
+                    help="VIP Access token model. Should be VSST (desktop token, default) or VSMT (mobile token) or VSMB (HOTP). Some clients only accept one or the other.")
 
     pshow = sp.add_parser('show', help="Show the current 6-digit token")
     m = pshow.add_mutually_exclusive_group()
@@ -157,5 +161,5 @@ def main():
     args = p.parse_args()
     return args.func(p, args)
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()
