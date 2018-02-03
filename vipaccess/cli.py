@@ -53,8 +53,6 @@ def provision(p, args):
     otp_token = vp.get_token_from_response(response.content)
     print("Decrypting token...")
     otp_secret = vp.decrypt_key(otp_token['iv'], otp_token['cipher'])
-    otp_secret_hex = vp.decode_secret_hex(otp_secret)
-    print('Secret in HEX for Yubikey: '+ otp_secret_hex)
     otp_secret_b32 = base64.b32encode(otp_secret).upper().decode('ascii')
     print("Checking token...")
     if not vp.check_token(otp_token['id'], otp_secret, session):
@@ -67,7 +65,10 @@ def provision(p, args):
         print('Credential created successfully:\n\t' + otp_uri)
         print("This credential expires on this date: " + otp_token['expiry'])
         print('\nYou will need the ID to register this credential: ' + otp_token['id'])
-        if not otp_token['id'].startswith('VSMB'):
+        if otp_token['id'].startswith('VSMB'):
+            otp_secret_hex = vp.decode_secret_hex(otp_secret)
+            print('Secret in HEX for Yubikey: '+ otp_secret_hex)
+        else:
             print('\nYou can use oathtool to generate the same OTP codes')
             print('as would be produced by the official VIP Access apps:\n')
             print('    Token is Time based TOTP Token')
