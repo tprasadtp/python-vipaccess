@@ -1,12 +1,22 @@
 python-vipaccess
 ================
 
+
 [![Build Status](https://api.travis-ci.org/tprasadtp/python-vipaccess.png)](https://travis-ci.org/tprasadtp/python-vipaccess)
 [![Coverage
  Status](https://coveralls.io/repos/github/tprasadtp/python-vipaccess/badge.svg?branch=master)](https://coveralls.io/github/tprasadtp/python-vipaccess?branch=master)
  [![Docker Build Status](https://img.shields.io/docker/build/tprasadtp/py-vipaccess.svg)](https://hub.docker.com/r/tprasadtp/py-vipaccess/)
 
 This is a fork of [@cyrozap](https://github.com/cyrozap)'s [`python-vipaccess`](https://github.com/dlenski/python-vipaccess).
+
+
+## Branches
+| Branch | About |
+| ------ | ----- |
+| upstream-hotp | Ustream branch with added hotp support (No QR code stuff) |
+| upstream | Upstream master Branch |
+| master | Fork with HOTP support, different docker file, QR code generation |
+
 
 Main differences:
 
@@ -19,6 +29,7 @@ Main differences:
   provisioning (creating a new token) and emitting codes for an
   existing token (inspired by the command-line interface of
   [`stoken`](https://github.com/cernekee/stoken), which handles the same functions for [RSA SecurID](https://en.wikipedia.org/wiki/RSA_SecurID) tokens
+
 
 Intro
 -----
